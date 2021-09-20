@@ -10,11 +10,17 @@ import java.awt.event.KeyListener;
 
 public class flappypanel extends JPanel implements KeyListener,ActionListener{
 	
-	
+	 
 	final int WIDTH=525,HEIGHT=550;
+	final int WALLVELOCITY=5;
+	final int WALLWIDTH =50;
 	int flappyheight=HEIGHT/4;
 	int velcoity=0;
-	int flappyV=0,flappyA=2;
+	double flappyV=0,flappyA=0,flappyI=0.5;
+	boolean gameOver=false;
+	int wallx=WIDTH+10;
+	int gap=(int)(Math.random()*HEIGHT/1.5);
+	
 	
 	public flappypanel()
 	{
@@ -28,8 +34,9 @@ public class flappypanel extends JPanel implements KeyListener,ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
+		flappyA += flappyI;
 		flappyV += flappyA;
-				
+		wallx -= WALLVELOCITY;
 		repaint();
 		
 	}
@@ -40,9 +47,8 @@ public class flappypanel extends JPanel implements KeyListener,ActionListener{
 		
 		int code=e.getKeyCode();
 		if(code==e.VK_SPACE)
-		{
-			if(flappyV-30 >= -133)
-			        flappyV-=30;
+		{	
+			flappyA = -9.5;
 		}
 		
 	}
@@ -63,14 +69,40 @@ public class flappypanel extends JPanel implements KeyListener,ActionListener{
 	public void paintComponent(Graphics g)
 	{
 		super.paintComponent(g);
-		drawFlappy(g);
+		
+		if(!gameOver)
+		{
+			drawWall(g);
+			drawFlappy(g);
+		}
+		
 	}
 	
 	private void drawFlappy(Graphics g)
 	{
 		g.setColor(Color.WHITE);
 		
-		g.fillRect(150, flappyheight+flappyV, 25, 25);
+		int flappyrange=(int) (flappyheight+flappyV);
+		
+		if(wallx<=100 && wallx+WALLWIDTH >= 100)
+		{
+			if(((flappyrange>=0) && (flappyrange<=gap)) || ((flappyrange+25>=gap+100) && (flappyrange+25<=HEIGHT)))
+              {
+	               gameOver=true;
+              }
+		}
+		
+		g.fillRect(75, (int)(flappyheight+flappyV), 25, 25);
+	}
+	
+	private void drawWall(Graphics g)
+	{
+		g.setColor(Color.RED);
+		g.fillRect(wallx, 0, WALLWIDTH, HEIGHT);
+		
+		
+		g.setColor(Color.BLACK);
+		g.fillRect(wallx, gap, WALLWIDTH, 125);
 	}
 
 }
