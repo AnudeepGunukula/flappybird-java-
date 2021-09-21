@@ -16,10 +16,13 @@ public class flappypanel extends JPanel implements KeyListener,ActionListener{
 	final int WALLWIDTH =50;
 	int flappyheight=HEIGHT/4;
 	int velcoity=0;
-	double flappyV=0,flappyA=0,flappyI=0.5;
+	double flappyV=0,flappyA=0,flappyI=1;
 	boolean gameOver=false;
-	int wallx=WIDTH+10;
-	int gap=(int)(Math.random()*HEIGHT/1.5);
+	
+	
+	int[] wallx= {WIDTH,WIDTH+WIDTH/2};
+	int[] gap = {(int)(Math.random()*HEIGHT/1.5),(int)(Math.random()*HEIGHT)};
+	
 	
 	
 	public flappypanel()
@@ -36,7 +39,8 @@ public class flappypanel extends JPanel implements KeyListener,ActionListener{
 		// TODO Auto-generated method stub
 		flappyA += flappyI;
 		flappyV += flappyA;
-		wallx -= WALLVELOCITY;
+		wallx[0] -= WALLVELOCITY;
+		wallx[1]-= WALLVELOCITY;
 		repaint();
 		
 	}
@@ -73,6 +77,7 @@ public class flappypanel extends JPanel implements KeyListener,ActionListener{
 		if(!gameOver)
 		{
 			drawWall(g);
+			logic();
 			drawFlappy(g);
 		}
 		
@@ -82,27 +87,44 @@ public class flappypanel extends JPanel implements KeyListener,ActionListener{
 	{
 		g.setColor(Color.WHITE);
 		
-		int flappyrange=(int) (flappyheight+flappyV);
-		
-		if(wallx<=100 && wallx+WALLWIDTH >= 100)
-		{
-			if(((flappyrange>=0) && (flappyrange<=gap)) || ((flappyrange+25>=gap+100) && (flappyrange+25<=HEIGHT)))
-              {
-	               gameOver=true;
-              }
-		}
-		
 		g.fillRect(75, (int)(flappyheight+flappyV), 25, 25);
 	}
 	
 	private void drawWall(Graphics g)
 	{
-		g.setColor(Color.RED);
-		g.fillRect(wallx, 0, WALLWIDTH, HEIGHT);
+		for(int i=0;i<2;i++)
+		{
+			g.setColor(Color.RED);
+			g.fillRect(wallx[i], 0, WALLWIDTH, HEIGHT);
+			
+			
+			g.setColor(Color.BLACK);
+			g.fillRect(wallx[i], gap[i], WALLWIDTH, 125);
+		}
+		
+	}
+	
+	private void logic()
+	{
+		for(int i=0;i<2;i++)
+		{
+			if(wallx[i]<=100 && wallx[i]+WALLWIDTH >= 100)
+			{
+				int flappyrange=(int) (flappyheight+flappyV);
+				if(((flappyrange>=0) && (flappyrange<=gap[i])) || ((flappyrange+5>=gap[i]+100) && (flappyrange+25<=HEIGHT)))
+	              {
+		               gameOver=true;
+	              }
+			}
+			
+			if(wallx[i]+WALLWIDTH<=0)
+			{
+				wallx[i]=WIDTH;
+				gap[i]=(int)(Math.random()*HEIGHT/1.5);
+			}
+		}
 		
 		
-		g.setColor(Color.BLACK);
-		g.fillRect(wallx, gap, WALLWIDTH, 125);
 	}
 
 }
